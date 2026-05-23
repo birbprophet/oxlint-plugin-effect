@@ -16,40 +16,46 @@ npm install @mpsuesser/oxlint-plugin-effect
 bun add @mpsuesser/oxlint-plugin-effect
 ```
 
-Register the plugin and enable the recommended category in your oxlint config:
-
-```jsonc
-// oxlint.json
-{
-	"plugins": ["@mpsuesser/oxlint-plugin-effect"],
-	"categories": {
-		"recommended": "error"
-	}
-}
-```
-
-All 54 rules ship in the `recommended` category, so the snippet above turns the whole rule set on at once. To switch the severity, change `"error"` to `"warn"`.
-
-To turn an individual rule off, set it to `"off"` in the `rules` block. Rules are namespaced under `effect/`:
-
-```jsonc
-{
-	"plugins": ["@mpsuesser/oxlint-plugin-effect"],
-	"categories": {
-		"recommended": "error"
-	},
-	"rules": {
-		"effect/avoid-native-object-helpers": "off"
-	}
-}
-```
-
-To suppress a rule at a specific call site, use oxlint's native disable directive:
+Use the generated recommended config from `oxlint.config.ts`:
 
 ```ts
-// oxlint-disable-next-line effect/avoid-try-catch -- gating a third-party callback we can't change
-try { ... } catch (e) { ... }
+import { defineConfig } from 'oxlint';
+import effect from '@mpsuesser/oxlint-plugin-effect';
+
+export default defineConfig({
+	extends: [effect.configs.recommended]
+});
 ```
+
+`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 54 rules at `error` severity.
+
+To override an individual rule, add a `rules` entry after the `extends` block:
+
+```ts
+import { defineConfig } from 'oxlint';
+import effect from '@mpsuesser/oxlint-plugin-effect';
+
+export default defineConfig({
+	extends: [effect.configs.recommended],
+	rules: {
+		'effect/avoid-native-object-helpers': 'off',
+		'effect/avoid-direct-json': 'warn'
+	}
+});
+```
+
+If you use `.oxlintrc.json`, oxlint cannot import a package config object. Configure the JS plugin and any rules you want explicitly:
+
+```jsonc
+{
+	"jsPlugins": ["@mpsuesser/oxlint-plugin-effect"],
+	"rules": {
+		"effect/avoid-direct-json": "error"
+	}
+}
+```
+
+Use `oxlint.config.ts` when you want the full generated recommended config.
 
 ## Rules at a glance
 

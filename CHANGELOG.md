@@ -1,9 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Published package exports now point at built `dist/` files instead of raw TypeScript source, so oxlint can load the plugin from `node_modules` without Node type-stripping failures.
+- Added a generated `configs.recommended` config for `oxlint.config.ts`; importing the plugin and extending this config now registers the JS plugin and enables all 54 rules at `error` severity.
+- Replaced the old native-plugin-style `plugins` / `categories.recommended` documentation with oxlint JS plugin configuration using `jsPlugins` and explicit rule IDs.
+- Updated to `effect-oxlint@0.3.0`, Effect `4.0.0-beta.70`, Bun `1.3.14`, and current supporting tool versions.
+
 ## 0.1.0 — Initial Release
 
 Opinionated oxlint plugin enforcing Effect-first development conventions.
 
-54 rules covering statement bans, import bans, member expression bans, call expression rules, type-level rules, complex contextual rules, and pattern enforcement rules. All rules ship in the `recommended` category, so the entire rule set can be enabled with a single `"categories": { "recommended": "error" }` entry in `oxlint.json`.
+54 rules covering statement bans, import bans, member expression bans, call expression rules, type-level rules, complex contextual rules, and pattern enforcement rules. All rules ship in the generated `configs.recommended` config for `oxlint.config.ts`.
 
 See the [README](./README.md) for the full rule list with examples.

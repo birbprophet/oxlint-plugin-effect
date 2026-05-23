@@ -1,5 +1,3 @@
-import type { CreateRule } from '@oxlint/plugins';
-
 import { Plugin } from 'effect-oxlint';
 
 import avoidAny from './rules/avoid-any.ts';
@@ -57,25 +55,7 @@ import useTempFileScoped from './rules/use-temp-file-scoped.ts';
 import vmInWrongFile from './rules/vm-in-wrong-file.ts';
 import yieldInForLoop from './rules/yield-in-for-loop.ts';
 
-/**
- * Mark a rule as part of the plugin's recommended set.
- *
- * Users can then enable every Effect rule at once via
- * `"categories": { "recommended": "error" }` in `oxlint.json`, instead of
- * having to list each rule individually.
- */
-const recommend = (rule: CreateRule): CreateRule => ({
-	...rule,
-	meta: {
-		...rule.meta,
-		docs: {
-			...rule.meta?.docs,
-			recommended: true
-		}
-	}
-});
-
-const rules: Record<string, CreateRule> = {
+const rules = {
 	// ── Statement bans ───────────────────────────────────────
 	'avoid-try-catch': avoidTryCatch,
 	'prefer-match-over-switch': preferMatchOverSwitch,
@@ -147,7 +127,6 @@ const rules: Record<string, CreateRule> = {
 
 export default Plugin.define({
 	name: 'effect',
-	rules: Object.fromEntries(
-		Object.entries(rules).map(([name, rule]) => [name, recommend(rule)])
-	)
+	specifier: '@mpsuesser/oxlint-plugin-effect',
+	rules
 });
