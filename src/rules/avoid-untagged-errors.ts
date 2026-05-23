@@ -9,6 +9,7 @@
  * (`Effect.die(new TypeError(...))` for invariant violations) and the noise
  * isn't worth the marginal value.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import { pipe } from 'effect';
 import * as Effect from 'effect/Effect';
@@ -39,7 +40,7 @@ const NEW_MESSAGE =
 const INSTANCEOF_MESSAGE =
 	'Avoid `instanceof Error` in Effect code. Use `catchTag`/`catchTags` with `Schema.TaggedErrorClass` for type-safe error discrimination. (EF-30)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-untagged-errors',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -89,3 +90,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

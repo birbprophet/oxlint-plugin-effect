@@ -8,6 +8,7 @@
  * `new Date(value)` — and every `Date.<static>` access. The few legitimate
  * parse-shaped uses can suppress with `oxlint-disable-next-line`.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import { pipe } from 'effect';
 import * as Effect from 'effect/Effect';
@@ -35,7 +36,7 @@ const isDateGlobal = Schema.is(DateGlobal);
 const MESSAGE =
 	'Avoid direct `Date` usage in Effect code. Use `DateTime` from `effect` or the `Clock` service for testable, deterministic time. Suppress with `oxlint-disable-next-line` for legitimate parse cases. (EF-9)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'use-clock-service',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -78,3 +79,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

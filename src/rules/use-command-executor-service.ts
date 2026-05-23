@@ -6,6 +6,8 @@
  * (and the older `Command` / `CommandExecutor` in `@effect/platform`)
  * which give typed errors, scoped lifetime, and declarative I/O.
  */
+import type { CreateRule } from '@oxlint/plugins';
+
 import * as Schema from 'effect/Schema';
 
 import { Rule } from 'effect-oxlint';
@@ -21,7 +23,9 @@ const ChildProcessImportSource = Schema.Literals([
 
 const isChildProcessImportSource = Schema.is(ChildProcessImportSource);
 
-export default Rule.banImport(isChildProcessImportSource, {
+const rule: CreateRule = Rule.banImport(isChildProcessImportSource, {
 	message:
 		'Avoid importing `child_process` / `node:child_process`. Use `ChildProcessSpawner` + `ChildProcess` from `effect/unstable/process` (or `Command` + `CommandExecutor` from `@effect/platform`) for typed, scoped, composable process spawning. See the `effect-command-executor` skill.'
 });
+
+export default rule;

@@ -13,6 +13,7 @@
  * any other shape (variable, computed expression) is left alone — those
  * almost never read like tag discrimination at the call site.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -78,7 +79,7 @@ const isTagComparisonPair = (left: ESTree.Node, right: ESTree.Node): boolean =>
 const MESSAGE =
 	'Avoid direct `._tag === "..."` checks. Use `$is("Tag")` for type guards, `$match` for exhaustive pattern matching, or `Match.value(...).pipe(Match.when(...))` for composable branching. (EF-7)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-direct-tag-checks',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -103,3 +104,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

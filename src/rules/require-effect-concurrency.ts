@@ -16,6 +16,7 @@
  * We scan every argument so the rule survives small signature differences
  * across the three APIs without having to encode positional shapes.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -76,7 +77,7 @@ const anyArgCarriesConcurrency = (call: ESTree.CallExpression): boolean =>
 const messageFor = (apiName: string): string =>
 	`Specify \`concurrency\` explicitly on \`${apiName}\`. Even sequential execution is a concurrency decision — make throughput and ordering intent reviewable at the call site (e.g. \`{ concurrency: 1 }\`, \`{ concurrency: 'unbounded' }\`, or a numeric limit). (EF-27)`;
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'require-effect-concurrency',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -103,3 +104,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

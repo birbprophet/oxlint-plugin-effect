@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -8,7 +9,7 @@ import { AST, Diagnostic, Rule, RuleContext } from 'effect-oxlint';
 const MESSAGE =
 	'Avoid native `fetch()` in Effect code. Use `HttpClientRequest`, `HttpClientResponse`, and `HttpClient` from Effect for typed errors, composable request building, and testability via layer substitution. (EF-9b)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-native-fetch',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -55,3 +56,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

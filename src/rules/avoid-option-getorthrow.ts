@@ -11,6 +11,7 @@
  * method-form `result.getOrThrow()` — without needing to enumerate
  * every container module.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -35,7 +36,7 @@ const isGetOrThrowAccess = (node: ESTree.MemberExpression): boolean =>
 		Option.exists(([, prop]) => prop === 'getOrThrow')
 	);
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-option-getorthrow',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -51,3 +52,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

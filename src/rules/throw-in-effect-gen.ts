@@ -9,6 +9,7 @@
  * it back into the typed error channel. We track that scope and suppress
  * diagnostics while we're inside it.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -114,7 +115,7 @@ const isTryPropertyOfEffectTry = (node: ESTree.Node): boolean => {
 const MESSAGE =
 	'Do not throw inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced`. Use `yield* Effect.fail(new MyError(...))` (or `yield* new MyTaggedError({...})`) to keep errors in the typed channel. (EF-1)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'throw-in-effect-gen',
 	meta: Rule.meta({
 		type: 'problem',
@@ -151,3 +152,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

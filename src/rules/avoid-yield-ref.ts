@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -6,7 +7,7 @@ import { Diagnostic, Rule, RuleContext } from 'effect-oxlint';
 
 const DIRECT_YIELD_TARGETS = new Set(['ref', 'deferred', 'fiber', 'latch']);
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-yield-ref',
 	meta: Rule.meta({
 		type: 'problem',
@@ -39,3 +40,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

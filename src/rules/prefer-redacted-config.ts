@@ -20,6 +20,7 @@
  * three-way `Property` union (ObjectProperty / BindingProperty /
  * AssignmentTargetProperty) that hits the `Property` visitor.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -211,7 +212,7 @@ const primitiveMessageFor = (apiName: string, key: string): string =>
 const schemaFieldMessageFor = (key: string): string =>
 	`Field \`${key}\` inside \`Config.schema(...)\` looks like a secret. Wrap its inner schema in \`Schema.Redacted(...)\` (e.g. \`Schema.Redacted(Schema.String)\`) so the value stays redacted from logs and \`toString\`. (EF-29)`;
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'prefer-redacted-config',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -270,3 +271,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

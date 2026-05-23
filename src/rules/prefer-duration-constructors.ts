@@ -12,6 +12,7 @@
  * Schedules, not numbers. The previous inclusion was a bug that produced
  * nonsensical diagnostics.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -120,7 +121,7 @@ const flaggedLiteralIn = (
 const messageFor = (apiName: string, value: number): string =>
 	`Use \`Duration.millis(${value})\` or \`Duration.seconds(...)\` instead of a raw numeric literal in \`${apiName}\`. Duration constructors are self-documenting and prevent unit confusion. (EF-16)`;
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'prefer-duration-constructors',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -159,3 +160,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

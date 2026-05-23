@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -66,7 +67,7 @@ const checkClass = (
 	return Effect.all(reports, { discard: true });
 };
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'no-opaque-instance-fields',
 	meta: Rule.meta({
 		type: 'problem',
@@ -149,3 +150,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

@@ -1,10 +1,11 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
 
 import { Diagnostic, Rule, RuleContext, SourceCode } from 'effect-oxlint';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-ts-ignore',
 	meta: Rule.meta({
 		type: 'problem',
@@ -35,3 +36,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

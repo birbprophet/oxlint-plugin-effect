@@ -13,6 +13,7 @@
  * object name — any receiver (`fs`, `FileSystem`, `platform`) is matched
  * since the call shape itself is the smell.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -79,7 +80,7 @@ const TMPDIR_MESSAGE =
 const unscopedMessage = (api: string): string =>
 	`Avoid \`${api}\` — the unscoped variant requires manual cleanup. Use \`${api}Scoped\` so the resource is finalized when its scope closes.`;
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'use-temp-file-scoped',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -131,3 +132,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

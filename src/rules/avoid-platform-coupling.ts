@@ -8,6 +8,7 @@
  * because outside binding packages (e.g. application entry points)
  * importing `@effect/platform-bun` is correct.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
@@ -79,7 +80,7 @@ const isPlatformBunImportSource = Schema.is(PlatformBunImportSource);
 const MESSAGE =
 	'Binding packages must be platform-agnostic. Import from `@effect/platform` (abstract interfaces) instead of `@effect/platform-bun` (concrete implementations). Platform layers belong in the runtime entry point.';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-platform-coupling',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -108,3 +109,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

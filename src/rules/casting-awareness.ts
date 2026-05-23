@@ -1,10 +1,11 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
 
 import { Diagnostic, Rule, RuleContext } from 'effect-oxlint';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'casting-awareness',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -54,3 +55,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

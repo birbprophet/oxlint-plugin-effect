@@ -12,6 +12,7 @@
  *  - A property access ending in `.path` (e.g. `item.path`).
  *  - A `+` string concatenation: `dir + file`.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -147,7 +148,7 @@ const detectLargePathHint = (arg: ESTree.Node): Option.Option<string> => {
 const messageFor = (hint: string): string =>
 	`Consider streaming this read with \`Stream.fromReadableStream\` or \`FileSystem.stream\` — ${hint}. \`fs.readFile\` loads the entire file into memory.`;
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'stream-large-files',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -177,3 +178,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

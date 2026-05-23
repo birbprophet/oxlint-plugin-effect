@@ -9,6 +9,7 @@
  *   - `<succeed|sync>(default)` — bare callee, e.g. when `Effect` is
  *     destructured or namespaced via `import * as E from "effect/Effect"`.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -139,7 +140,7 @@ const singleReturnExpression = (
 const MESSAGE =
 	'Avoid blanket `Effect.catch` / `Effect.catchCause` with default values — this silently swallows all errors. Use `Effect.catchTag` or `Effect.catchTags` for precise, targeted recovery. (EF-30)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'effect-catchall-default',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -170,3 +171,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

@@ -9,13 +9,14 @@
  *
  * The rule has no scope conditions: any `TSNonNullExpression` is suspicious.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import { Diagnostic, Rule, RuleContext, Visitor } from 'effect-oxlint';
 
 const MESSAGE =
 	'Avoid the `!` non-null assertion — it tells the compiler "trust me" and crashes at runtime if wrong. Model absence with `Option`, decode unknown shapes via `Schema.decodeUnknown*`, or guard at the boundary with `Option.fromNullishOr` / `?.` / `??`. (EF-2)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-non-null-assertion',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -29,3 +30,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

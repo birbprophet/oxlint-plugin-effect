@@ -9,6 +9,7 @@
  * fiber-visible state that should live in `Ref`, `SynchronizedRef`, or
  * `Effect.cached`.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -85,7 +86,7 @@ const isContextServiceMakeCall = (node: ESTree.CallExpression): boolean => {
 const MESSAGE =
 	'Consider `Ref`, `SynchronizedRef`, or `Effect.cached` instead of `let` inside service-owning factories. Shared mutable bindings hide fiber-visible state and lifecycle behavior. `let` is fine in pure helpers and narrow scopes.';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-mutable-state',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -126,3 +127,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

@@ -10,6 +10,7 @@
  * `console.dir`, `console.group*`, `console.time*`, `console.assert`,
  * `console.count*`, `console.profile*`, `console.timeStamp`, etc.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -33,7 +34,7 @@ const isConsoleAccess = (node: ESTree.MemberExpression): boolean =>
 		Option.exists(([obj]) => obj === 'console')
 	);
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'use-console-service',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -49,3 +50,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

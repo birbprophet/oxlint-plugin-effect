@@ -7,6 +7,8 @@
  * errors and composable Effect values — there is no reason for domain
  * code to reach for either Node module directly.
  */
+import type { CreateRule } from '@oxlint/plugins';
+
 import * as Schema from 'effect/Schema';
 
 import { Rule } from 'effect-oxlint';
@@ -24,7 +26,9 @@ const FsImportSource = Schema.Literals([
 
 const isFsImportSource = Schema.is(FsImportSource);
 
-export default Rule.banImport(isFsImportSource, {
+const rule: CreateRule = Rule.banImport(isFsImportSource, {
 	message:
 		'Avoid importing `fs` / `node:fs` / `fs/promises`. Use the `FileSystem` service from `@effect/platform` for typed, Effect-native file I/O. See the `effect-filesystem` skill.'
 });
+
+export default rule;

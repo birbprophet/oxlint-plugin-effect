@@ -1,10 +1,11 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
 
 import { AST, Diagnostic, Rule, RuleContext, Visitor } from 'effect-oxlint';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'context-tag-extends',
 	meta: Rule.meta({
 		type: 'problem',
@@ -173,3 +174,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

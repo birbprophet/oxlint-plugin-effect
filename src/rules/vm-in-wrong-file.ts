@@ -13,6 +13,7 @@
  * Detection is purely name-based ("ends with VM"), which is the
  * project's naming convention for view-model types.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -120,7 +121,7 @@ const serviceMessage = (name: string): string =>
 const vmFileSuggestion = (filename: string): string =>
 	filename.replace(/\.(ts|tsx)$/, '.vm.$1');
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'vm-in-wrong-file',
 	meta: Rule.meta({
 		type: 'problem',
@@ -191,3 +192,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

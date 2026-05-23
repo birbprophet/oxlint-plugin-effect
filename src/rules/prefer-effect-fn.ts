@@ -22,6 +22,7 @@
  * `export default Effect.gen(...)`) is also flagged because it's a
  * named, reused effect that would benefit from a named span.
  */
+import type { CreateRule } from '@oxlint/plugins';
 
 import type { ESTree } from 'effect-oxlint';
 
@@ -172,7 +173,7 @@ const SERVICE_MESSAGE =
 const TOP_LEVEL_MESSAGE =
 	'Use `Effect.fn("functionName")(function* (...) { ... })` instead of assigning `Effect.gen(...)` to a variable. `Effect.fn` provides automatic tracing with named spans. (EF-14)';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'prefer-effect-fn',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -238,3 +239,5 @@ export default Rule.define({
 		);
 	}
 });
+
+export default rule;

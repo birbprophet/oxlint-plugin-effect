@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -31,7 +32,7 @@ function checkOptionsObject(
 	return REQUIRED_KEYS.filter((k) => !presentKeys.has(k));
 }
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'require-filter-metadata',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -103,3 +104,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

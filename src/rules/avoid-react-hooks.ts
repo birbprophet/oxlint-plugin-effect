@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -22,7 +23,7 @@ const REACT_HOOKS = new Set([
 	'useInsertionEffect'
 ]);
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-react-hooks',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -50,3 +51,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

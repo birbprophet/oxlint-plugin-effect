@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import { Plugin } from 'effect-oxlint';
 
 import avoidAny from './rules/avoid-any.ts';
@@ -55,7 +56,7 @@ import useTempFileScoped from './rules/use-temp-file-scoped.ts';
 import vmInWrongFile from './rules/vm-in-wrong-file.ts';
 import yieldInForLoop from './rules/yield-in-for-loop.ts';
 
-const rules = {
+const rules: Record<string, CreateRule> = {
 	// ── Statement bans ───────────────────────────────────────
 	'avoid-try-catch': avoidTryCatch,
 	'prefer-match-over-switch': preferMatchOverSwitch,
@@ -125,8 +126,15 @@ const rules = {
 	'no-opaque-instance-fields': noOpaqueInstanceFields
 };
 
-export default Plugin.define({
+const plugin: Plugin.DefinedPlugin<Record<string, CreateRule>> = Plugin.define({
 	name: 'effect',
 	specifier: '@mpsuesser/oxlint-plugin-effect',
 	rules
 });
+
+/**
+ * Oxlint plugin for Effect-first TypeScript rules and generated config presets.
+ *
+ * @since 0.2.1
+ */
+export default plugin;

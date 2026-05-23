@@ -1,10 +1,11 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
 
 import { AST, Diagnostic, Rule, RuleContext } from 'effect-oxlint';
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'avoid-schema-suffix',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -68,3 +69,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;

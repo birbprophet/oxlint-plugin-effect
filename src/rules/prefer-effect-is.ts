@@ -1,3 +1,4 @@
+import type { CreateRule } from '@oxlint/plugins';
 import type { ESTree } from 'effect-oxlint';
 
 import * as Effect from 'effect/Effect';
@@ -15,7 +16,7 @@ const TYPEOF_MAP: Record<string, string> = {
 	object: 'P.isObject'
 };
 
-export default Rule.define({
+const rule: CreateRule = Rule.define({
 	name: 'prefer-effect-is',
 	meta: Rule.meta({
 		type: 'suggestion',
@@ -65,3 +66,5 @@ export default Rule.define({
 		};
 	}
 });
+
+export default rule;
