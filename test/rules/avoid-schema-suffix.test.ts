@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/avoid-schema-suffix.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 describe('avoid-schema-suffix', () => {
 	it('flags const fooSchema = Schema.String()', () => {

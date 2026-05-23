@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/use-command-executor-service.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 describe('use-command-executor-service', () => {
 	it('flags import of node:child_process', () => {

@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/stream-large-files.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 const readFile = (...args: ReadonlyArray<unknown>) =>
 	Testing.callOfMember('fs', 'readFile', args);

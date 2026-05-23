@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/require-effect-concurrency.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 const run = (node: unknown) => Testing.runRule(rule, 'CallExpression', node);
 

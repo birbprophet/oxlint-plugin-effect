@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/avoid-untagged-errors.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 describe('avoid-untagged-errors', () => {
 	// ── NewExpression — only bare `Error` is flagged ──

@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/avoid-platform-coupling.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 const BINDING = '/repo/packages/sdk/binding/index.ts';
 const RUNTIME = '/repo/packages/sdk/runtime/main.ts';

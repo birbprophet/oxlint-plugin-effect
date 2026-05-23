@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/effect-catchall-default.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 describe('effect-catchall-default', () => {
 	// ── Fully-qualified handler bodies (Effect.succeed / Effect.sync) ──

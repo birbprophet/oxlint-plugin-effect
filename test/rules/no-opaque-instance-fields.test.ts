@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 import rule from '../../src/rules/no-opaque-instance-fields.ts';
-import { Testing } from 'effect-oxlint';
+import * as Testing from 'effect-oxlint/testing';
 
 describe('no-opaque-instance-fields', () => {
 	const schemaImport = Testing.importDeclWithSpecifiers('effect/Schema', [
