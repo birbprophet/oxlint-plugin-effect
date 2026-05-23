@@ -126,15 +126,15 @@ const rules: Record<string, CreateRule> = {
 	'no-opaque-instance-fields': noOpaqueInstanceFields
 };
 
+/**
+ * Oxlint plugin for Effect-first TypeScript rules and generated config presets.
+ *
+ * @since 0.2.2
+ */
 const plugin: Plugin.DefinedPlugin<Record<string, CreateRule>> = Plugin.define({
 	name: 'effect',
 	specifier: '@mpsuesser/oxlint-plugin-effect',
 	rules
 });
 
-/**
- * Oxlint plugin for Effect-first TypeScript rules and generated config presets.
- *
- * @since 0.2.1
- */
 export default plugin;
