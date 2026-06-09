@@ -28,10 +28,14 @@ import effectCatchallDefault from './rules/effect-catchall-default.ts';
 import effectPromiseVsTrypromise from './rules/effect-promise-vs-trypromise.ts';
 import effectRunInBody from './rules/effect-run-in-body.ts';
 import imperativeLoops from './rules/imperative-loops.ts';
+import maybePrefixRequiresOption from './rules/maybe-prefix-requires-option.ts';
 import noBarrelImports from './rules/no-barrel-imports.ts';
+import noEffectIgnoreThenAs from './rules/no-effect-ignore-then-as.ts';
+import noLengthComparison from './rules/no-length-comparison.ts';
 import noOpaqueInstanceFields from './rules/no-opaque-instance-fields.ts';
 import preferArrMatch from './rules/prefer-arr-match.ts';
 import preferArrSort from './rules/prefer-arr-sort.ts';
+import preferArrayFromoptionOverOptionMatchEmpty from './rules/prefer-array-fromoption-over-option-match-empty.ts';
 import preferDurationConstructors from './rules/prefer-duration-constructors.ts';
 import preferEffectFn from './rules/prefer-effect-fn.ts';
 import preferEffectIs from './rules/prefer-effect-is.ts';
@@ -42,6 +46,7 @@ import preferRedactedConfig from './rules/prefer-redacted-config.ts';
 import preferSchemaClass from './rules/prefer-schema-class.ts';
 import requireEffectConcurrency from './rules/require-effect-concurrency.ts';
 import requireFilterMetadata from './rules/require-filter-metadata.ts';
+import requireIsPrefixForBooleanSchemaField from './rules/require-is-prefix-for-boolean-schema-field.ts';
 import requireSchemaTypeAlias from './rules/require-schema-type-alias.ts';
 import streamLargeFiles from './rules/stream-large-files.ts';
 import throwInEffectGen from './rules/throw-in-effect-gen.ts';
@@ -113,6 +118,12 @@ const rules: Record<string, CreateRule> = {
 	'use-temp-file-scoped': useTempFileScoped,
 	'avoid-native-object-helpers': avoidNativeObjectHelpers,
 
+	// ── Effect / Option / Array idioms ────────────────────────
+	'prefer-array-fromoption-over-option-match-empty':
+		preferArrayFromoptionOverOptionMatchEmpty,
+	'no-length-comparison': noLengthComparison,
+	'no-effect-ignore-then-as': noEffectIgnoreThenAs,
+
 	// ── Pattern enforcement rules ────────────────────────────
 	'prefer-namespace-imports': preferNamespaceImports,
 	'prefer-effect-is': preferEffectIs,
@@ -121,6 +132,9 @@ const rules: Record<string, CreateRule> = {
 	'prefer-redacted-config': preferRedactedConfig,
 	'require-schema-type-alias': requireSchemaTypeAlias,
 	'require-filter-metadata': requireFilterMetadata,
+	'require-is-prefix-for-boolean-schema-field':
+		requireIsPrefixForBooleanSchemaField,
+	'maybe-prefix-requires-option': maybePrefixRequiresOption,
 	'require-effect-concurrency': requireEffectConcurrency,
 	'no-barrel-imports': noBarrelImports,
 	'no-opaque-instance-fields': noOpaqueInstanceFields

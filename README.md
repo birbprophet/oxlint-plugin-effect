@@ -6,7 +6,7 @@
 
 An opinionated [oxlint](https://oxc.rs/docs/guide/usage/linter) plugin for [Effect v4](https://effect.website) that drives every module toward Effect services, typed error channels, and functional composition. It flags imperative patterns, raw Node APIs, untyped errors, and other non-idiomatic shapes at the lint layer so they never make it into review.
 
-The plugin ships **54 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
+The plugin ships **59 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
 
 ## Installation
 
@@ -27,7 +27,7 @@ export default defineConfig({
 });
 ```
 
-`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 54 rules at `error` severity.
+`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 59 rules at `error` severity.
 
 To override an individual rule, add a `rules` entry after the `extends` block:
 
@@ -88,10 +88,14 @@ Use `oxlint.config.ts` when you want the full generated recommended config.
 | [`effect-promise-vs-trypromise`](#effect-promise-vs-trypromise) | `Effect.promise` — prefer `Effect.tryPromise`                                    |
 | [`effect-run-in-body`](#effect-run-in-body)                     | `Effect.runSync` / `runPromise` / `runFork` outside entrypoints                  |
 | [`imperative-loops`](#imperative-loops)                         | `for` / `while` / `do…while` in domain code                                      |
+| [`maybe-prefix-requires-option`](#maybe-prefix-requires-option) | `maybe*` named field that is not an `Option<T>`                              |
 | [`no-barrel-imports`](#no-barrel-imports)                       | Named imports from the `effect` barrel package                                   |
+| [`no-effect-ignore-then-as`](#no-effect-ignore-then-as)       | Redundant `Effect.ignore` before `Effect.as`, or on known infallible primitives |
+| [`no-length-comparison`](#no-length-comparison)               | `.length === 0` and friends — use named string/array predicates                |
 | [`no-opaque-instance-fields`](#no-opaque-instance-fields)       | Instance members on `Schema.Opaque` classes                                      |
 | [`prefer-arr-match`](#prefer-arr-match)                         | Manual empty / non-empty branching — use `Arr.match`                             |
 | [`prefer-arr-sort`](#prefer-arr-sort)                           | `Array.prototype.sort` — use `Arr.sort` with an `Order`                          |
+| [`prefer-array-fromoption-over-option-match-empty`](#prefer-array-fromoption-over-option-match-empty) | `Option.match` that produces `[]` / `[v]`                                  |
 | [`prefer-duration-constructors`](#prefer-duration-constructors) | Raw millisecond numbers passed to Effect timing APIs                             |
 | [`prefer-effect-fn`](#prefer-effect-fn)                         | `Effect.gen` bound to a const or used in a service method                        |
 | [`prefer-effect-is`](#prefer-effect-is)                         | `typeof x === "string"` — use `P.isString` and friends                           |
@@ -102,6 +106,7 @@ Use `oxlint.config.ts` when you want the full generated recommended config.
 | [`prefer-schema-class`](#prefer-schema-class)                   | `Schema.Struct` for named types — prefer `Schema.Class`                          |
 | [`require-effect-concurrency`](#require-effect-concurrency)     | `Effect.all` / `forEach` / `validateAll` without explicit `concurrency`          |
 | [`require-filter-metadata`](#require-filter-metadata)           | `Schema.makeFilter` / `makeFilterGroup` missing identifier / title / description |
+| [`require-is-prefix-for-boolean-schema-field`](#require-is-prefix-for-boolean-schema-field) | `Schema.Boolean` fields without a boolean predicate prefix             |
 | [`require-schema-type-alias`](#require-schema-type-alias)       | Exported schema constant without a matching `export type` alias                  |
 | [`stream-large-files`](#stream-large-files)                     | `fs.readFile` on paths that look like large / unbounded files                    |
 | [`throw-in-effect-gen`](#throw-in-effect-gen)                   | `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced`                  |
@@ -992,6 +997,31 @@ yield * Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
 
 ---
 
+
+### `maybe-prefix-requires-option`
+
+A field named `maybeX` promises an `Option<X>`. Using the prefix with a plain `T | null`, `T | undefined`, or a Schema optional/nullable field breaks reader expectations.
+
+`maybe*` names should be typed as `Option<T>` in TypeScript and as `Schema.Option(...)` / `Schema.OptionFromNullishOr(...)` in Schema structs. If the value really is nullable rather than optional, rename it to `nullableX`.
+
+### `no-effect-ignore-then-as`
+
+`Effect.ignore` discards both the success value and the error channel. When it appears immediately before `Effect.as(...)`, the `as` already discards the success value, so `ignore` only erases failures silently.
+
+The rule also flags `Effect.ignore` on known infallible primitives where there is no error channel to ignore.
+
+### `no-length-comparison`
+
+Manual `.length === 0`, `.length > 0`, and related checks hide whether the value is a string or an array. Prefer named predicates such as `Str.isEmpty`, `Str.isNonEmpty`, `Arr.isReadonlyArrayEmpty`, `Arr.isReadonlyArrayNonEmpty`, or branch with `Arr.match`.
+
+### `prefer-array-fromoption-over-option-match-empty`
+
+`Option<A>` to `ReadonlyArray<A>` is `Array.fromOption`. Spelling that as `Option.match({ onNone: () => [], onSome: (v) => [v] })` obscures the intent.
+
+### `require-is-prefix-for-boolean-schema-field`
+
+Boolean Schema fields should read as predicates at call sites. Use prefixes such as `is*`, `has*`, `can*`, `should*`, `was*`, or `will*` for `Schema.Boolean` fields.
+
 ## Suppression
 
 All rules respect oxlint's standard disable directives:
@@ -1010,7 +1040,7 @@ A trailing `-- <reason>` comment is encouraged for any suppression that lives lo
 
 ```sh
 bun install
-bun test          # run the test suite (374 tests across 54 rules)
+bun test          # run the test suite (446 tests across 59 rules)
 bun run check     # format + lint + typecheck
 ```
 

@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — Rule migration from Foldkit
+
+### Added
+
+- Added five Effect-generic rules moved from `@mpsuesser/oxlint-plugin-foldkit`: `prefer-array-fromoption-over-option-match-empty`, `no-length-comparison`, `no-effect-ignore-then-as`, `require-is-prefix-for-boolean-schema-field`, and `maybe-prefix-requires-option`.
 
 ## 0.2.3 — Effect 4.0.0-beta.78
 
