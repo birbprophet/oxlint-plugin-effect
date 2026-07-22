@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 - Remove stream-large-files
+
+### Changed
+
+- Removed the `stream-large-files` rule from the plugin and recommended configuration.
+
 ## 0.4.1 - Schema predicate detection
 
 ### Fixed

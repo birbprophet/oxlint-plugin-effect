@@ -47,7 +47,6 @@ import requireEffectConcurrency from './rules/require-effect-concurrency.ts';
 import requireFilterMetadata from './rules/require-filter-metadata.ts';
 import requireIsPrefixForBooleanSchemaField from './rules/require-is-prefix-for-boolean-schema-field.ts';
 import requireSchemaTypeAlias from './rules/require-schema-type-alias.ts';
-import streamLargeFiles from './rules/stream-large-files.ts';
 import throwInEffectGen from './rules/throw-in-effect-gen.ts';
 import useClockService from './rules/use-clock-service.ts';
 import useCommandExecutorService from './rules/use-command-executor-service.ts';
@@ -75,7 +74,6 @@ const rules: Record<string, CreateRule> = {
 	'effect-run-in-body': effectRunInBody,
 	'effect-promise-vs-trypromise': effectPromiseVsTrypromise,
 	'use-console-service': useConsoleService,
-	'stream-large-files': streamLargeFiles,
 
 	// ── Import bans ──────────────────────────────────────────
 	'use-filesystem-service': useFilesystemService,

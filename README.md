@@ -6,7 +6,7 @@
 
 An opinionated [oxlint](https://oxc.rs/docs/guide/usage/linter) plugin for [Effect v4](https://effect.website) that drives every module toward Effect services, typed error channels, and functional composition. It flags imperative patterns, raw Node APIs, untyped errors, and other non-idiomatic shapes at the lint layer so they never make it into review.
 
-The plugin ships **58 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
+The plugin ships **57 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
 
 ## Installation
 
@@ -27,7 +27,7 @@ export default defineConfig({
 });
 ```
 
-`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 58 rules at `error` severity.
+`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 57 rules at `error` severity.
 
 To override an individual rule, add a `rules` entry after the `extends` block:
 
@@ -107,7 +107,6 @@ Use `oxlint.config.ts` when you want the full generated recommended config.
 | [`require-filter-metadata`](#require-filter-metadata)                                                 | `Schema.makeFilter` / `makeFilterGroup` missing identifier / title / description |
 | [`require-is-prefix-for-boolean-schema-field`](#require-is-prefix-for-boolean-schema-field)           | `Schema.Boolean` fields without a boolean predicate prefix                       |
 | [`require-schema-type-alias`](#require-schema-type-alias)                                             | Exported schema constant without a matching `export type` alias                  |
-| [`stream-large-files`](#stream-large-files)                                                           | `fs.readFile` on paths that look like large / unbounded files                    |
 | [`throw-in-effect-gen`](#throw-in-effect-gen)                                                         | `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced`                  |
 | [`use-clock-service`](#use-clock-service)                                                             | `new Date()` / `Date.now()` / `Date.UTC()` — use `Clock` / `DateTime`            |
 | [`use-command-executor-service`](#use-command-executor-service)                                       | `child_process` / `node:child_process` imports                                   |
@@ -802,21 +801,6 @@ export const User = Schema.Struct({ id: Schema.String });
 export type User = typeof User.Type;
 ```
 
-### `stream-large-files`
-
-`fs.readFile` / `fs.readFileString` load the entire file into memory. For paths whose names suggest unbounded size (`*.log`, `dump.json`, `archive.tar`, `export.csv`, `*.ndjson`, …), use `Stream.fromReadableStream` or `FileSystem.stream` instead.
-
-```ts
-// ❌
-const text = yield * fs.readFileString('events.log');
-
-// ✅
-const fs = yield * FileSystem.FileSystem;
-const lines = fs
-	.stream('events.log')
-	.pipe(Stream.decodeText('utf-8'), Stream.splitLines);
-```
-
 ### `throw-in-effect-gen`
 
 `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced` lands in the unrecoverable defect channel. Use `yield* Effect.fail(new MyError(...))` (or `yield* new MyTaggedError({ ... })`) to keep failures typed. The `try:` arm of `Effect.tryPromise` / `Effect.try` is excluded — that's the point of `try:`.
@@ -1022,7 +1006,7 @@ A trailing `-- <reason>` comment is encouraged for any suppression that lives lo
 
 ```sh
 bun install
-bun test          # run the test suite (446 tests across 58 rules)
+bun test          # run the test suite (429 tests across 57 rules)
 bun run check     # format + lint + typecheck
 ```
 
