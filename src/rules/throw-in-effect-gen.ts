@@ -4,10 +4,9 @@
  * Use `yield* Effect.fail(...)` (or `yield* new MyTaggedError({...})`) so the
  * failure stays catchable by `Effect.catchTag`.
  *
- * Exemption: `throw` inside the `try:` callback of `Effect.try(...)` /
- * `Effect.tryPromise(...)` is fine — the paired `catch:` handler captures
- * it back into the typed error channel. We track that scope and suppress
- * diagnostics while we're inside it.
+ * Exemption: `throw` inside the direct thunk or `try:` callback of
+ * `Effect.try(...)` / `Effect.tryPromise(...)` is captured in the typed error
+ * channel. We track those scopes and suppress diagnostics while inside them.
  */
 import type { CreateRule } from '@oxlint/plugins';
 
@@ -38,7 +37,7 @@ const isEffectGenLikeName = Schema.is(EffectGenLikeName);
 const EffectTryName = Schema.Literals(['try', 'tryPromise']).annotate({
 	title: 'EffectTryName',
 	description:
-		'`Effect.try` and `Effect.tryPromise` accept a `try:` callback whose thrown errors are captured by the paired `catch:` handler.'
+		'`Effect.try` and `Effect.tryPromise` capture thrown errors from a direct thunk or `try:` callback in the error channel.'
 });
 
 const isEffectTryName = Schema.is(EffectTryName);
@@ -80,6 +79,24 @@ const isEffectGenLikeCall = (node: ESTree.CallExpression): boolean =>
 		)
 	);
 
+const isEffectTryCall = (node: ESTree.CallExpression): boolean =>
+	pipe(
+		AST.narrow(node.callee, 'MemberExpression'),
+		Option.flatMap(AST.memberNames),
+		Option.exists(
+			([obj, prop]) => obj === 'Effect' && isEffectTryName(prop)
+		)
+	);
+
+/** A direct thunk passed as the first argument to `Effect.try` or `tryPromise`. */
+const isDirectThunkOfEffectTry = (node: ESTree.Node): boolean =>
+	pipe(
+		parentOfType(node, 'CallExpression'),
+		Option.exists(
+			(call) => call.arguments[0] === node && isEffectTryCall(call)
+		)
+	);
+
 /**
  * A `Property` whose key is the identifier `try`, sitting as a direct
  * key of an `ObjectExpression` that is itself the direct argument of a
@@ -96,15 +113,7 @@ const isTryPropertyOfEffectTry = (node: ESTree.Node): boolean => {
 	return pipe(
 		parentOfType(node, 'ObjectExpression'),
 		Option.flatMap((obj) => parentOfType(obj, 'CallExpression')),
-		Option.flatMap((call) =>
-			pipe(
-				AST.narrow(call.callee, 'MemberExpression'),
-				Option.flatMap(AST.memberNames)
-			)
-		),
-		Option.exists(
-			([obj, prop]) => obj === 'Effect' && isEffectTryName(prop)
-		)
+		Option.exists(isEffectTryCall)
 	);
 };
 
@@ -120,12 +129,12 @@ const rule: CreateRule = Rule.define({
 	meta: Rule.meta({
 		type: 'problem',
 		description:
-			'Disallow `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced` — use `yield* Effect.fail(...)` so the failure stays in the typed error channel. Throws inside the `try:` callback of `Effect.try` / `Effect.tryPromise` are exempt.'
+			'Disallow `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced` — use `yield* Effect.fail(...)` so the failure stays in the typed error channel. Throws inside direct thunks and `try:` callbacks of `Effect.try` / `Effect.tryPromise` are exempt.'
 	}),
 	create: function* () {
 		const ctx = yield* RuleContext;
 		const generatorDepth = yield* Ref.make(0);
-		const tryPropertyDepth = yield* Ref.make(0);
+		const capturedTryDepth = yield* Ref.make(0);
 
 		return Visitor.merge(
 			Visitor.tracked(
@@ -136,12 +145,22 @@ const rule: CreateRule = Rule.define({
 			Visitor.tracked(
 				'Property',
 				isTryPropertyOfEffectTry,
-				tryPropertyDepth
+				capturedTryDepth
+			),
+			Visitor.tracked(
+				'ArrowFunctionExpression',
+				isDirectThunkOfEffectTry,
+				capturedTryDepth
+			),
+			Visitor.tracked(
+				'FunctionExpression',
+				isDirectThunkOfEffectTry,
+				capturedTryDepth
 			),
 			Visitor.on('ThrowStatement', (node) =>
 				Effect.gen(function* () {
 					const gen = yield* Ref.get(generatorDepth);
-					const tryDepth = yield* Ref.get(tryPropertyDepth);
+					const tryDepth = yield* Ref.get(capturedTryDepth);
 					if (gen > 0 && tryDepth === 0) {
 						yield* ctx.report(
 							Diagnostic.make({ node, message: MESSAGE })

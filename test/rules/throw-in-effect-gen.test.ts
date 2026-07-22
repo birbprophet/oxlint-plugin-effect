@@ -1,4 +1,5 @@
 import { describe, expect, it } from '@effect/vitest';
+import type { ESTree } from 'effect-oxlint';
 
 import rule from '../../src/rules/throw-in-effect-gen.ts';
 import * as Testing from 'effect-oxlint/testing';
@@ -82,6 +83,42 @@ describe('throw-in-effect-gen', () => {
 			['Property', tryProp],
 			['ThrowStatement', Testing.throwStmt()],
 			['Property:exit', tryProp],
+			['CallExpression:exit', effectGen]
+		]);
+		expect(errors).toHaveLength(0);
+	});
+
+	it('allows throw inside a direct Effect.try thunk', () => {
+		const effectGen = Testing.callOfMember('Effect', 'gen');
+		const effectTry = Testing.callOfMember('Effect', 'try');
+		const thunk = {
+			type: 'ArrowFunctionExpression',
+			parent: effectTry
+		} as ESTree.ArrowFunctionExpression;
+		effectTry.arguments = [thunk];
+		const errors = Testing.runRuleMulti(rule, [
+			['CallExpression', effectGen],
+			['ArrowFunctionExpression', thunk],
+			['ThrowStatement', Testing.throwStmt()],
+			['ArrowFunctionExpression:exit', thunk],
+			['CallExpression:exit', effectGen]
+		]);
+		expect(errors).toHaveLength(0);
+	});
+
+	it('allows throw inside a direct Effect.tryPromise thunk', () => {
+		const effectGen = Testing.callOfMember('Effect', 'gen');
+		const tryPromise = Testing.callOfMember('Effect', 'tryPromise');
+		const thunk = {
+			type: 'ArrowFunctionExpression',
+			parent: tryPromise
+		} as ESTree.ArrowFunctionExpression;
+		tryPromise.arguments = [thunk];
+		const errors = Testing.runRuleMulti(rule, [
+			['CallExpression', effectGen],
+			['ArrowFunctionExpression', thunk],
+			['ThrowStatement', Testing.throwStmt()],
+			['ArrowFunctionExpression:exit', thunk],
 			['CallExpression:exit', effectGen]
 		]);
 		expect(errors).toHaveLength(0);

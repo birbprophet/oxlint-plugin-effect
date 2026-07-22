@@ -3,7 +3,7 @@
   "references": {
     "effect": {
       "repository": "Effect-TS/effect",
-      "branch": "main",
-    },
-  },
+      "branch": "main"
+    }
+  }
 }

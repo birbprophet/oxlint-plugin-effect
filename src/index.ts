@@ -43,7 +43,6 @@ import preferMatchOverSwitch from './rules/prefer-match-over-switch.ts';
 import preferNamespaceImports from './rules/prefer-namespace-imports.ts';
 import preferOptionOverNull from './rules/prefer-option-over-null.ts';
 import preferRedactedConfig from './rules/prefer-redacted-config.ts';
-import preferSchemaClass from './rules/prefer-schema-class.ts';
 import requireEffectConcurrency from './rules/require-effect-concurrency.ts';
 import requireFilterMetadata from './rules/require-filter-metadata.ts';
 import requireIsPrefixForBooleanSchemaField from './rules/require-is-prefix-for-boolean-schema-field.ts';
@@ -75,7 +74,6 @@ const rules: Record<string, CreateRule> = {
 	'use-random-service': useRandomService,
 	'effect-run-in-body': effectRunInBody,
 	'effect-promise-vs-trypromise': effectPromiseVsTrypromise,
-	'prefer-schema-class': preferSchemaClass,
 	'use-console-service': useConsoleService,
 	'stream-large-files': streamLargeFiles,
 

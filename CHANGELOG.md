@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.0 - Effect beta.100 compatibility
+
+### Changed
+
+- Updated Effect tooling to `effect@4.0.0-beta.100`, `effect-oxlint@0.3.3`, and current supporting tool versions.
+- Removed `prefer-schema-class`; `Schema.Struct` remains appropriate for named structural schemas.
+- Updated `throw-in-effect-gen` to allow throws captured by direct `Effect.try` and `Effect.tryPromise` thunks.
+- Aligned rule diagnostics and recognized API names with Effect beta.100, including `Schema.isSchemaError` and the current timeout APIs.
+
+### Fixed
+
+- Corrected documentation to reference `Effect.validate` and the current total of 58 rules.
+- Synchronized the npm and JSR package versions.
+
 ## 0.3.0 — Rule migration from Foldkit
 
 ### Added

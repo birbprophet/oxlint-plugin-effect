@@ -34,8 +34,6 @@ const EffectDurationApi = Schema.Literals([
 	'timeout',
 	'timeoutOption',
 	'timeoutOrElse',
-	'timeoutFail',
-	'timeoutFailCause',
 	'sleep',
 	'delay'
 ]).annotate({

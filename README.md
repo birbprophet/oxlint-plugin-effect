@@ -6,7 +6,7 @@
 
 An opinionated [oxlint](https://oxc.rs/docs/guide/usage/linter) plugin for [Effect v4](https://effect.website) that drives every module toward Effect services, typed error channels, and functional composition. It flags imperative patterns, raw Node APIs, untyped errors, and other non-idiomatic shapes at the lint layer so they never make it into review.
 
-The plugin ships **59 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
+The plugin ships **58 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
 
 ## Installation
 
@@ -27,7 +27,7 @@ export default defineConfig({
 });
 ```
 
-`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 59 rules at `error` severity.
+`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 58 rules at `error` severity.
 
 To override an individual rule, add a `rules` entry after the `extends` block:
 
@@ -59,67 +59,66 @@ Use `oxlint.config.ts` when you want the full generated recommended config.
 
 ## Rules at a glance
 
-| Rule                                                            | What it catches                                                                  |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`avoid-any`](#avoid-any)                                       | `as any` and `as unknown as T` casts                                             |
-| [`avoid-data-tagged-error`](#avoid-data-tagged-error)           | `Data.TaggedError` — use `Schema.TaggedErrorClass`                               |
-| [`avoid-direct-json`](#avoid-direct-json)                       | `JSON.parse` / `JSON.stringify` — use `Schema.fromJsonString`                    |
-| [`avoid-direct-tag-checks`](#avoid-direct-tag-checks)           | `x._tag === "..."` checks — use `$is` / `$match` / `Match`                       |
-| [`avoid-expect-in-if`](#avoid-expect-in-if)                     | `expect(...)` nested inside `if` blocks in tests                                 |
-| [`avoid-mutable-state`](#avoid-mutable-state)                   | `let` bindings inside service / layer factories                                  |
-| [`avoid-native-fetch`](#avoid-native-fetch)                     | Native `fetch()` — use Effect `HttpClient`                                       |
-| [`avoid-native-object-helpers`](#avoid-native-object-helpers)   | `Object.keys` / `Object.entries` / `Object.fromEntries` etc.                     |
-| [`avoid-node-imports`](#avoid-node-imports)                     | Bare `node:*` imports in platform-agnostic code                                  |
-| [`avoid-non-null-assertion`](#avoid-non-null-assertion)         | The `!` non-null assertion operator                                              |
-| [`avoid-object-type`](#avoid-object-type)                       | `Object` and `{}` as types                                                       |
-| [`avoid-option-getorthrow`](#avoid-option-getorthrow)           | `.getOrThrow` on `Option` / `Either` / `Result`                                  |
-| [`avoid-platform-coupling`](#avoid-platform-coupling)           | `@effect/platform-bun` imports in binding packages                               |
-| [`avoid-process-env`](#avoid-process-env)                       | `process.env` — use a `Config` service                                           |
-| [`avoid-react-hooks`](#avoid-react-hooks)                       | `useState` / `useEffect` / `useReducer` — use Effect Atom VMs                    |
-| [`avoid-schema-suffix`](#avoid-schema-suffix)                   | Schema constants suffixed with `Schema`                                          |
-| [`avoid-sync-fs`](#avoid-sync-fs)                               | `fs.readFileSync` and other synchronous `fs` calls                               |
-| [`avoid-try-catch`](#avoid-try-catch)                           | `try` / `catch` in Effect code                                                   |
-| [`avoid-ts-ignore`](#avoid-ts-ignore)                           | `@ts-ignore` / `@ts-expect-error` comments                                       |
-| [`avoid-untagged-errors`](#avoid-untagged-errors)               | `new Error(...)` and `instanceof Error` for recoverable failures                 |
-| [`avoid-yield-ref`](#avoid-yield-ref)                           | `yield* ref` / `yield* deferred` / `yield* fiber` (removed in v4)                |
-| [`casting-awareness`](#casting-awareness)                       | `as T` assertions (excluding `as const` / `as never`)                            |
-| [`context-tag-extends`](#context-tag-extends)                   | `Context.Tag` / `Context.GenericTag` / `Effect.Service` / legacy `ServiceMap.*`  |
-| [`effect-catchall-default`](#effect-catchall-default)           | Blanket `Effect.catch` / `catchCause` swallowing all errors                      |
-| [`effect-promise-vs-trypromise`](#effect-promise-vs-trypromise) | `Effect.promise` — prefer `Effect.tryPromise`                                    |
-| [`effect-run-in-body`](#effect-run-in-body)                     | `Effect.runSync` / `runPromise` / `runFork` outside entrypoints                  |
-| [`imperative-loops`](#imperative-loops)                         | `for` / `while` / `do…while` in domain code                                      |
-| [`maybe-prefix-requires-option`](#maybe-prefix-requires-option) | `maybe*` named field that is not an `Option<T>`                              |
-| [`no-barrel-imports`](#no-barrel-imports)                       | Named imports from the `effect` barrel package                                   |
-| [`no-effect-ignore-then-as`](#no-effect-ignore-then-as)       | Redundant `Effect.ignore` before `Effect.as`, or on known infallible primitives |
-| [`no-length-comparison`](#no-length-comparison)               | `.length === 0` and friends — use named string/array predicates                |
-| [`no-opaque-instance-fields`](#no-opaque-instance-fields)       | Instance members on `Schema.Opaque` classes                                      |
-| [`prefer-arr-match`](#prefer-arr-match)                         | Manual empty / non-empty branching — use `Arr.match`                             |
-| [`prefer-arr-sort`](#prefer-arr-sort)                           | `Array.prototype.sort` — use `Arr.sort` with an `Order`                          |
-| [`prefer-array-fromoption-over-option-match-empty`](#prefer-array-fromoption-over-option-match-empty) | `Option.match` that produces `[]` / `[v]`                                  |
-| [`prefer-duration-constructors`](#prefer-duration-constructors) | Raw millisecond numbers passed to Effect timing APIs                             |
-| [`prefer-effect-fn`](#prefer-effect-fn)                         | `Effect.gen` bound to a const or used in a service method                        |
-| [`prefer-effect-is`](#prefer-effect-is)                         | `typeof x === "string"` — use `P.isString` and friends                           |
-| [`prefer-match-over-switch`](#prefer-match-over-switch)         | `switch` statements — use `Match.value`                                          |
-| [`prefer-namespace-imports`](#prefer-namespace-imports)         | Named imports from Effect submodules — use namespace imports                     |
-| [`prefer-option-over-null`](#prefer-option-over-null)           | `T \| null` / `T \| undefined` union types                                       |
-| [`prefer-redacted-config`](#prefer-redacted-config)             | `Config.string("apiKey")` etc. for secret-looking keys                           |
-| [`prefer-schema-class`](#prefer-schema-class)                   | `Schema.Struct` for named types — prefer `Schema.Class`                          |
-| [`require-effect-concurrency`](#require-effect-concurrency)     | `Effect.all` / `forEach` / `validateAll` without explicit `concurrency`          |
-| [`require-filter-metadata`](#require-filter-metadata)           | `Schema.makeFilter` / `makeFilterGroup` missing identifier / title / description |
-| [`require-is-prefix-for-boolean-schema-field`](#require-is-prefix-for-boolean-schema-field) | `Schema.Boolean` fields without a boolean predicate prefix             |
-| [`require-schema-type-alias`](#require-schema-type-alias)       | Exported schema constant without a matching `export type` alias                  |
-| [`stream-large-files`](#stream-large-files)                     | `fs.readFile` on paths that look like large / unbounded files                    |
-| [`throw-in-effect-gen`](#throw-in-effect-gen)                   | `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced`                  |
-| [`use-clock-service`](#use-clock-service)                       | `new Date()` / `Date.now()` / `Date.UTC()` — use `Clock` / `DateTime`            |
-| [`use-command-executor-service`](#use-command-executor-service) | `child_process` / `node:child_process` imports                                   |
-| [`use-console-service`](#use-console-service)                   | `console.*` — use `Effect.log*` / `Console`                                      |
-| [`use-filesystem-service`](#use-filesystem-service)             | `fs` / `node:fs` / `fs/promises` imports                                         |
-| [`use-http-client-service`](#use-http-client-service)           | `http` / `https` / `node:http` / `node:https` imports                            |
-| [`use-path-service`](#use-path-service)                         | `path` / `node:path` imports                                                     |
-| [`use-random-service`](#use-random-service)                     | `Math.random()` — use the `Random` service                                       |
-| [`use-temp-file-scoped`](#use-temp-file-scoped)                 | `os.tmpdir()` / unscoped `makeTempFile` / `makeTempDirectory`                    |
-| [`vm-in-wrong-file`](#vm-in-wrong-file)                         | View Model interfaces and layers outside `.vm.ts` files                          |
-| [`yield-in-for-loop`](#yield-in-for-loop)                       | `yield*` inside `for` loops — use `Effect.forEach`                               |
+| Rule                                                                                                  | What it catches                                                                  |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`avoid-any`](#avoid-any)                                                                             | `as any` and `as unknown as T` casts                                             |
+| [`avoid-data-tagged-error`](#avoid-data-tagged-error)                                                 | `Data.TaggedError` — use `Schema.TaggedErrorClass`                               |
+| [`avoid-direct-json`](#avoid-direct-json)                                                             | `JSON.parse` / `JSON.stringify` — use `Schema.fromJsonString`                    |
+| [`avoid-direct-tag-checks`](#avoid-direct-tag-checks)                                                 | `x._tag === "..."` checks — use `$is` / `$match` / `Match`                       |
+| [`avoid-expect-in-if`](#avoid-expect-in-if)                                                           | `expect(...)` nested inside `if` blocks in tests                                 |
+| [`avoid-mutable-state`](#avoid-mutable-state)                                                         | `let` bindings inside service / layer factories                                  |
+| [`avoid-native-fetch`](#avoid-native-fetch)                                                           | Native `fetch()` — use Effect `HttpClient`                                       |
+| [`avoid-native-object-helpers`](#avoid-native-object-helpers)                                         | `Object.keys` / `Object.entries` / `Object.fromEntries` etc.                     |
+| [`avoid-node-imports`](#avoid-node-imports)                                                           | Bare `node:*` imports in platform-agnostic code                                  |
+| [`avoid-non-null-assertion`](#avoid-non-null-assertion)                                               | The `!` non-null assertion operator                                              |
+| [`avoid-object-type`](#avoid-object-type)                                                             | `Object` and `{}` as types                                                       |
+| [`avoid-option-getorthrow`](#avoid-option-getorthrow)                                                 | `.getOrThrow` on `Option` / `Either` / `Result`                                  |
+| [`avoid-platform-coupling`](#avoid-platform-coupling)                                                 | `@effect/platform-bun` imports in binding packages                               |
+| [`avoid-process-env`](#avoid-process-env)                                                             | `process.env` — use a `Config` service                                           |
+| [`avoid-react-hooks`](#avoid-react-hooks)                                                             | `useState` / `useEffect` / `useReducer` — use Effect Atom VMs                    |
+| [`avoid-schema-suffix`](#avoid-schema-suffix)                                                         | Schema constants suffixed with `Schema`                                          |
+| [`avoid-sync-fs`](#avoid-sync-fs)                                                                     | `fs.readFileSync` and other synchronous `fs` calls                               |
+| [`avoid-try-catch`](#avoid-try-catch)                                                                 | `try` / `catch` in Effect code                                                   |
+| [`avoid-ts-ignore`](#avoid-ts-ignore)                                                                 | `@ts-ignore` / `@ts-expect-error` comments                                       |
+| [`avoid-untagged-errors`](#avoid-untagged-errors)                                                     | `new Error(...)` and `instanceof Error` for recoverable failures                 |
+| [`avoid-yield-ref`](#avoid-yield-ref)                                                                 | `yield* ref` / `yield* deferred` / `yield* fiber` (removed in v4)                |
+| [`casting-awareness`](#casting-awareness)                                                             | `as T` assertions (excluding `as const` / `as never`)                            |
+| [`context-tag-extends`](#context-tag-extends)                                                         | `Context.Tag` / `Context.GenericTag` / `Effect.Service` / legacy `ServiceMap.*`  |
+| [`effect-catchall-default`](#effect-catchall-default)                                                 | Blanket `Effect.catch` / `catchCause` swallowing all errors                      |
+| [`effect-promise-vs-trypromise`](#effect-promise-vs-trypromise)                                       | `Effect.promise` — prefer `Effect.tryPromise`                                    |
+| [`effect-run-in-body`](#effect-run-in-body)                                                           | `Effect.runSync` / `runPromise` / `runFork` outside entrypoints                  |
+| [`imperative-loops`](#imperative-loops)                                                               | `for` / `while` / `do…while` in domain code                                      |
+| [`maybe-prefix-requires-option`](#maybe-prefix-requires-option)                                       | `maybe*` named field that is not an `Option<T>`                                  |
+| [`no-barrel-imports`](#no-barrel-imports)                                                             | Named imports from the `effect` barrel package                                   |
+| [`no-effect-ignore-then-as`](#no-effect-ignore-then-as)                                               | Redundant `Effect.ignore` before `Effect.as`, or on known infallible primitives  |
+| [`no-length-comparison`](#no-length-comparison)                                                       | `.length === 0` and friends — use named string/array predicates                  |
+| [`no-opaque-instance-fields`](#no-opaque-instance-fields)                                             | Instance members on `Schema.Opaque` classes                                      |
+| [`prefer-arr-match`](#prefer-arr-match)                                                               | Manual empty / non-empty branching — use `Arr.match`                             |
+| [`prefer-arr-sort`](#prefer-arr-sort)                                                                 | `Array.prototype.sort` — use `Arr.sort` with an `Order`                          |
+| [`prefer-array-fromoption-over-option-match-empty`](#prefer-array-fromoption-over-option-match-empty) | `Option.match` that produces `[]` / `[v]`                                        |
+| [`prefer-duration-constructors`](#prefer-duration-constructors)                                       | Raw millisecond numbers passed to Effect timing APIs                             |
+| [`prefer-effect-fn`](#prefer-effect-fn)                                                               | `Effect.gen` bound to a const or used in a service method                        |
+| [`prefer-effect-is`](#prefer-effect-is)                                                               | `typeof x === "string"` — use `P.isString` and friends                           |
+| [`prefer-match-over-switch`](#prefer-match-over-switch)                                               | `switch` statements — use `Match.value`                                          |
+| [`prefer-namespace-imports`](#prefer-namespace-imports)                                               | Named imports from Effect submodules — use namespace imports                     |
+| [`prefer-option-over-null`](#prefer-option-over-null)                                                 | `T \| null` / `T \| undefined` union types                                       |
+| [`prefer-redacted-config`](#prefer-redacted-config)                                                   | `Config.string("apiKey")` etc. for secret-looking keys                           |
+| [`require-effect-concurrency`](#require-effect-concurrency)                                           | `Effect.all` / `forEach` / `validate` without explicit `concurrency`             |
+| [`require-filter-metadata`](#require-filter-metadata)                                                 | `Schema.makeFilter` / `makeFilterGroup` missing identifier / title / description |
+| [`require-is-prefix-for-boolean-schema-field`](#require-is-prefix-for-boolean-schema-field)           | `Schema.Boolean` fields without a boolean predicate prefix                       |
+| [`require-schema-type-alias`](#require-schema-type-alias)                                             | Exported schema constant without a matching `export type` alias                  |
+| [`stream-large-files`](#stream-large-files)                                                           | `fs.readFile` on paths that look like large / unbounded files                    |
+| [`throw-in-effect-gen`](#throw-in-effect-gen)                                                         | `throw` inside `Effect.gen` / `Effect.fn` / `Effect.fnUntraced`                  |
+| [`use-clock-service`](#use-clock-service)                                                             | `new Date()` / `Date.now()` / `Date.UTC()` — use `Clock` / `DateTime`            |
+| [`use-command-executor-service`](#use-command-executor-service)                                       | `child_process` / `node:child_process` imports                                   |
+| [`use-console-service`](#use-console-service)                                                         | `console.*` — use `Effect.log*` / `Console`                                      |
+| [`use-filesystem-service`](#use-filesystem-service)                                                   | `fs` / `node:fs` / `fs/promises` imports                                         |
+| [`use-http-client-service`](#use-http-client-service)                                                 | `http` / `https` / `node:http` / `node:https` imports                            |
+| [`use-path-service`](#use-path-service)                                                               | `path` / `node:path` imports                                                     |
+| [`use-random-service`](#use-random-service)                                                           | `Math.random()` — use the `Random` service                                       |
+| [`use-temp-file-scoped`](#use-temp-file-scoped)                                                       | `os.tmpdir()` / unscoped `makeTempFile` / `makeTempDirectory`                    |
+| [`vm-in-wrong-file`](#vm-in-wrong-file)                                                               | View Model interfaces and layers outside `.vm.ts` files                          |
+| [`yield-in-for-loop`](#yield-in-for-loop)                                                             | `yield*` inside `for` loops — use `Effect.forEach`                               |
 
 ---
 
@@ -437,7 +436,7 @@ declare module 'some-api' {
 
 ### `avoid-untagged-errors`
 
-`new Error(...)` and `instanceof Error` make every failure interchangeable. `Schema.TaggedErrorClass` gives each failure mode a tag that `catchTag` / `catchTags` can discriminate at the type level.
+`new Error(...)` and `instanceof Error` make every failure interchangeable. `Schema.TaggedErrorClass` gives each domain failure mode a tag that `catchTag` / `catchTags` can discriminate at the type level. Use `Schema.isSchemaError` when narrowing schema failures.
 
 ```ts
 // ❌
@@ -760,25 +759,9 @@ const cfg =
 	);
 ```
 
-### `prefer-schema-class`
-
-`Schema.Struct` produces a plain object type. `Schema.Class` adds a constructor, `$is`, `$match`, and a branded nominal type, all for free.
-
-```ts
-// ❌
-const User = Schema.Struct({ id: Schema.String, name: Schema.String });
-type User = typeof User.Type;
-
-// ✅
-class User extends Schema.Class<User>('User')({
-	id: Schema.String,
-	name: Schema.String
-}) {}
-```
-
 ### `require-effect-concurrency`
 
-`Effect.all`, `Effect.forEach`, `Effect.validateAll`, and friends silently default to sequential execution. Sequential is sometimes correct — but it's a concurrency decision, so it should be reviewable at the call site.
+`Effect.all`, `Effect.forEach`, `Effect.validate`, and friends silently default to sequential execution. Sequential is sometimes correct — but it's a concurrency decision, so it should be reviewable at the call site.
 
 ```ts
 // ❌
@@ -997,7 +980,6 @@ yield * Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
 
 ---
 
-
 ### `maybe-prefix-requires-option`
 
 A field named `maybeX` promises an `Option<X>`. Using the prefix with a plain `T | null`, `T | undefined`, or a Schema optional/nullable field breaks reader expectations.
@@ -1040,7 +1022,7 @@ A trailing `-- <reason>` comment is encouraged for any suppression that lives lo
 
 ```sh
 bun install
-bun test          # run the test suite (446 tests across 59 rules)
+bun test          # run the test suite (445 tests across 58 rules)
 bun run check     # format + lint + typecheck
 ```
 

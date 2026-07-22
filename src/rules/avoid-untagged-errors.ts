@@ -38,7 +38,7 @@ const NEW_MESSAGE =
 	'Avoid `new Error(...)` in Effect code. Use `Schema.TaggedErrorClass` for typed, tagged errors that compose with `catchTag`/`catchTags`. (EF-1)';
 
 const INSTANCEOF_MESSAGE =
-	'Avoid `instanceof Error` in Effect code. Use `catchTag`/`catchTags` with `Schema.TaggedErrorClass` for type-safe error discrimination. (EF-30)';
+	'Avoid `instanceof Error` in Effect code. Use `catchTag`/`catchTags` with `Schema.TaggedErrorClass` for domain failures, or `Schema.isSchemaError` for schema failures. (EF-30)';
 
 const rule: CreateRule = Rule.define({
 	name: 'avoid-untagged-errors',
