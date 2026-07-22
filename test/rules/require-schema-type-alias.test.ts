@@ -70,4 +70,24 @@ describe('require-schema-type-alias', () => {
 		]);
 		expect(errors.length).toBe(0);
 	});
+
+	it('does not flag predicates created with Schema.is', () => {
+		const exportDecl = Testing.exportNamedDecl({
+			type: 'VariableDeclaration',
+			kind: 'const',
+			declarations: [
+				{
+					type: 'VariableDeclarator',
+					id: Testing.id('isPastDueMembership'),
+					init: Testing.callOfMember('Schema', 'is')
+				}
+			]
+		});
+
+		const errors = Testing.runRuleMulti(rule, [
+			['ExportNamedDeclaration', exportDecl],
+			['Program:exit' as never, { type: 'Program' }]
+		]);
+		expect(errors.length).toBe(0);
+	});
 });

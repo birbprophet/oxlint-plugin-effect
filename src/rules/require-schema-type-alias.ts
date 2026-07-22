@@ -21,6 +21,16 @@ const isSchemaReference = (init: ESTree.Expression): boolean => {
 		init.type === 'CallExpression' &&
 		init.callee.type === 'MemberExpression'
 	) {
+		// Schema.is(schema) returns a type guard, not a schema.
+		if (
+			init.callee.object.type === 'Identifier' &&
+			init.callee.object.name === 'Schema' &&
+			init.callee.property.type === 'Identifier' &&
+			init.callee.property.name === 'is'
+		) {
+			return false;
+		}
+
 		// Schema.brand("X"), Schema.Literal("X"), etc.
 		if (
 			init.callee.object.type === 'Identifier' &&

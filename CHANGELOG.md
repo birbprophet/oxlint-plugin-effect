@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 - Schema predicate detection
+
+### Fixed
+
+- Excluded predicates created with `Schema.is(...)` from `require-schema-type-alias`; these values are type guards rather than schemas and do not need matching type aliases.
+
 ## 0.4.0 - Effect beta.100 compatibility
 
 ### Changed

@@ -1022,7 +1022,7 @@ A trailing `-- <reason>` comment is encouraged for any suppression that lives lo
 
 ```sh
 bun install
-bun test          # run the test suite (445 tests across 58 rules)
+bun test          # run the test suite (446 tests across 58 rules)
 bun run check     # format + lint + typecheck
 ```
 
