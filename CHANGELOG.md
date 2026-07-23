@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.3 - README generator formatting
+
+### Fixed
+
+- Corrected all README examples to use the canonical `yield*` operator formatting and fixed the formatter exclusion that had rewritten them.
+
 ## 0.4.2 - Remove stream-large-files
 
 ### Changed

@@ -131,8 +131,8 @@ const user = data as any;
 const config = JSON.parse(raw) as unknown as Config;
 
 // ✅
-const user = yield * Schema.decodeUnknown(User)(data);
-const config = yield * Schema.decodeUnknownString(Config)(raw);
+const user = yield* Schema.decodeUnknown(User)(data);
+const config = yield* Schema.decodeUnknownString(Config)(raw);
 ```
 
 ### `avoid-data-tagged-error`
@@ -160,8 +160,8 @@ const user: User = JSON.parse(raw);
 const body = JSON.stringify(payload);
 
 // ✅
-const user = yield * Schema.decode(Schema.fromJsonString(User))(raw);
-const body = yield * Schema.encode(Schema.fromJsonString(Payload))(payload);
+const user = yield* Schema.decode(Schema.fromJsonString(User))(raw);
+const body = yield* Schema.encode(Schema.fromJsonString(Payload))(payload);
 ```
 
 ### `avoid-direct-tag-checks`
@@ -233,10 +233,9 @@ const res = await fetch('/api/users');
 const users = await res.json();
 
 // ✅
-const client = yield * HttpClient.HttpClient;
+const client = yield* HttpClient.HttpClient;
 const users =
-	yield *
-	client
+	yield* client
 		.get('/api/users')
 		.pipe(Effect.flatMap(HttpClientResponse.schemaBodyJson(UserList)));
 ```
@@ -336,8 +335,8 @@ const apiKey = process.env.API_KEY!;
 const port = parseInt(process.env.PORT ?? '3000');
 
 // ✅
-const apiKey = yield * Config.redacted('API_KEY');
-const port = yield * Config.integer('PORT').pipe(Config.withDefault(3000));
+const apiKey = yield* Config.redacted('API_KEY');
+const port = yield* Config.integer('PORT').pipe(Config.withDefault(3000));
 ```
 
 ### `avoid-react-hooks`
@@ -388,9 +387,9 @@ const text = fs.readFileSync(path, 'utf8');
 fs.writeFileSync(path, data);
 
 // ✅
-const fs = yield * FileSystem.FileSystem;
-const text = yield * fs.readFileString(path);
-yield * fs.writeFileString(path, data);
+const fs = yield* FileSystem.FileSystem;
+const text = yield* fs.readFileString(path);
+yield* fs.writeFileString(path, data);
 ```
 
 ### `avoid-try-catch`
@@ -407,8 +406,7 @@ try {
 
 // ✅
 return (
-	yield *
-	Effect.try({
+	yield* Effect.try({
 		try: () => JSON.parse(raw),
 		catch: () => new ParseFailed({ raw })
 	})
@@ -447,9 +445,8 @@ class UserNotFound extends Schema.TaggedErrorClass<UserNotFound>(
 	'UserNotFound'
 )('UserNotFound', { id: Schema.String }) {}
 
-yield * Effect.fail(new UserNotFound({ id }));
-yield *
-	effect.pipe(Effect.catchTag('UserNotFound', () => Effect.succeed(null)));
+yield* Effect.fail(new UserNotFound({ id }));
+yield* effect.pipe(Effect.catchTag('UserNotFound', () => Effect.succeed(null)));
 ```
 
 ### `avoid-yield-ref`
@@ -458,14 +455,14 @@ Direct `yield* ref` / `yield* deferred` / `yield* fiber` / `yield* latch` was re
 
 ```ts
 // ❌
-const value = yield * counter;
-const result = yield * deferred;
+const value = yield* counter;
+const result = yield* deferred;
 
 // ✅
-const value = yield * Ref.get(counter);
-const result = yield * Deferred.await(deferred);
-const exit = yield * Fiber.join(fiber);
-yield * Latch.await(latch);
+const value = yield* Ref.get(counter);
+const result = yield* Deferred.await(deferred);
+const exit = yield* Fiber.join(fiber);
+yield* Latch.await(latch);
 ```
 
 ### `casting-awareness`
@@ -478,8 +475,7 @@ const items = (data as Array<User>).filter((u) => u.active);
 
 // ✅
 const items =
-	yield *
-	Schema.decodeUnknown(Schema.Array(User))(data).pipe(
+	yield* Schema.decodeUnknown(Schema.Array(User))(data).pipe(
 		Effect.map(Arr.filter((u) => u.active))
 	);
 
@@ -524,12 +520,11 @@ effect.pipe(
 
 ```ts
 // ❌
-const user = yield * Effect.promise(() => fetchUser(id));
+const user = yield* Effect.promise(() => fetchUser(id));
 
 // ✅
 const user =
-	yield *
-	Effect.tryPromise({
+	yield* Effect.tryPromise({
 		try: () => fetchUser(id),
 		catch: (cause) => new FetchFailed({ cause })
 	});
@@ -635,11 +630,11 @@ Raw millisecond literals passed to `Effect.sleep`, `Schedule.spaced`, etc. read 
 
 ```ts
 // ❌
-yield * Effect.sleep(5000);
+yield* Effect.sleep(5000);
 const sched = Schedule.spaced(60_000);
 
 // ✅
-yield * Effect.sleep(Duration.seconds(5));
+yield* Effect.sleep(Duration.seconds(5));
 const sched = Schedule.spaced(Duration.minutes(1));
 ```
 
@@ -738,20 +733,18 @@ Configuration keys whose name conventionally identifies a secret (`apiKey`, `aut
 
 ```ts
 // ❌
-const apiKey = yield * Config.string('apiKey');
+const apiKey = yield* Config.string('apiKey');
 const cfg =
-	yield *
-	Config.schema(
+	yield* Config.schema(
 		Schema.Struct({
 			apiKey: Schema.String
 		})
 	);
 
 // ✅
-const apiKey = yield * Config.redacted('apiKey');
+const apiKey = yield* Config.redacted('apiKey');
 const cfg =
-	yield *
-	Config.schema(
+	yield* Config.schema(
 		Schema.Struct({
 			apiKey: Schema.Redacted(Schema.String)
 		})
@@ -764,12 +757,12 @@ const cfg =
 
 ```ts
 // ❌
-yield * Effect.forEach(ids, fetchUser);
+yield* Effect.forEach(ids, fetchUser);
 
 // ✅
-yield * Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
-yield * Effect.forEach(ids, fetchUser, { concurrency: 4 });
-yield * Effect.forEach(ids, fetchUser, { concurrency: 1 }); // explicit sequential
+yield* Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
+yield* Effect.forEach(ids, fetchUser, { concurrency: 4 });
+yield* Effect.forEach(ids, fetchUser, { concurrency: 1 }); // explicit sequential
 ```
 
 ### `require-filter-metadata`
@@ -829,8 +822,8 @@ const now = new Date();
 const ms = Date.now();
 
 // ✅
-const now = yield * DateTime.now;
-const ms = yield * Clock.currentTimeMillis;
+const now = yield* DateTime.now;
+const ms = yield* Clock.currentTimeMillis;
 ```
 
 ### `use-command-executor-service`
@@ -844,7 +837,7 @@ const proc = spawn('git', ['status']);
 
 // ✅
 import { Command } from '@effect/platform';
-const status = yield * Command.make('git', 'status').pipe(Command.string);
+const status = yield* Command.make('git', 'status').pipe(Command.string);
 ```
 
 ### `use-console-service`
@@ -857,9 +850,10 @@ console.log('Fetched user', user.id);
 console.error('Failed', err);
 
 // ✅
-yield *
-	Effect.logInfo('Fetched user').pipe(Effect.annotateLogs('userId', user.id));
-yield * Effect.logError('Failed').pipe(Effect.annotateLogs('cause', err));
+yield* Effect.logInfo('Fetched user').pipe(
+	Effect.annotateLogs('userId', user.id)
+);
+yield* Effect.logError('Failed').pipe(Effect.annotateLogs('cause', err));
 ```
 
 ### `use-filesystem-service`
@@ -873,8 +867,8 @@ const text = await fs.readFile(path, 'utf8');
 
 // ✅
 import { FileSystem } from '@effect/platform';
-const fs = yield * FileSystem.FileSystem;
-const text = yield * fs.readFileString(path);
+const fs = yield* FileSystem.FileSystem;
+const text = yield* fs.readFileString(path);
 ```
 
 ### `use-http-client-service`
@@ -904,7 +898,7 @@ const full = path.join(dir, name);
 
 // ✅
 import { Path } from '@effect/platform';
-const path_ = yield * Path.Path;
+const path_ = yield* Path.Path;
 const full = path_.join(dir, name);
 ```
 
@@ -917,7 +911,7 @@ const full = path_.join(dir, name);
 const n = Math.floor(Math.random() * 100);
 
 // ✅
-const n = yield * Random.nextIntBetween(0, 100);
+const n = yield* Random.nextIntBetween(0, 100);
 ```
 
 ### `use-temp-file-scoped`
@@ -930,8 +924,8 @@ import { tmpdir } from 'node:os';
 const dir = path.join(tmpdir(), 'work');
 
 // ✅
-const fs = yield * FileSystem.FileSystem;
-const dir = yield * fs.makeTempDirectoryScoped();
+const fs = yield* FileSystem.FileSystem;
+const dir = yield* fs.makeTempDirectoryScoped();
 ```
 
 ### `vm-in-wrong-file`
@@ -955,11 +949,11 @@ export const ProfileVMLive = Layer.effect(...);
 ```ts
 // ❌
 for (const id of ids) {
-	yield * fetchUser(id);
+	yield* fetchUser(id);
 }
 
 // ✅
-yield * Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
+yield* Effect.forEach(ids, fetchUser, { concurrency: 'unbounded' });
 ```
 
 ---
