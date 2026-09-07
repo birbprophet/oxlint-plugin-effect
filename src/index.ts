@@ -30,6 +30,22 @@ import effectRunInBody from './rules/effect-run-in-body.ts';
 import imperativeLoops from './rules/imperative-loops.ts';
 import maybePrefixRequiresOption from './rules/maybe-prefix-requires-option.ts';
 import noBarrelImports from './rules/no-barrel-imports.ts';
+import noChainedTypeAssertions from './rules/no-chained-type-assertions.ts';
+import noConditionalEmptyObjectSpread from './rules/no-conditional-empty-object-spread.ts';
+import noKnownValueWidening from './rules/no-known-value-widening.ts';
+import noModuleMocking from './rules/no-module-mocking.ts';
+import noObjectParameters from './rules/no-object-parameters.ts';
+import noReflectApply from './rules/no-reflect-apply.ts';
+import noReflectGet from './rules/no-reflect-get.ts';
+import noRuntimeTypeof from './rules/no-runtime-typeof.ts';
+import noServiceConstructorImports from './rules/no-service-constructor-imports.ts';
+import noShapeInSymbolNames from './rules/no-shape-in-symbol-names.ts';
+import noUnknownParameters from './rules/no-unknown-parameters.ts';
+import noUnknownReturns from './rules/no-unknown-returns.ts';
+import noUnknownTypeAliases from './rules/no-unknown-type-aliases.ts';
+import noUnsafeDictionaryType from './rules/no-unsafe-dictionary-type.ts';
+import noWidenThenAssert from './rules/no-widen-then-assert.ts';
+import requireSafetyCommentForTypeAssertion from './rules/require-safety-comment-for-type-assertion.ts';
 import noEffectIgnoreThenAs from './rules/no-effect-ignore-then-as.ts';
 import noLengthComparison from './rules/no-length-comparison.ts';
 import noOpaqueInstanceFields from './rules/no-opaque-instance-fields.ts';
@@ -60,6 +76,24 @@ import vmInWrongFile from './rules/vm-in-wrong-file.ts';
 import yieldInForLoop from './rules/yield-in-for-loop.ts';
 
 const rules: Record<string, CreateRule> = {
+	// ── Anti-slop evidence and boundary rules ────────────────
+	'no-chained-type-assertions': noChainedTypeAssertions,
+	'no-conditional-empty-object-spread': noConditionalEmptyObjectSpread,
+	'no-known-value-widening': noKnownValueWidening,
+	'no-module-mocking': noModuleMocking,
+	'no-object-parameters': noObjectParameters,
+	'no-reflect-apply': noReflectApply,
+	'no-reflect-get': noReflectGet,
+	'no-runtime-typeof': noRuntimeTypeof,
+	'no-service-constructor-imports': noServiceConstructorImports,
+	'no-shape-in-symbol-names': noShapeInSymbolNames,
+	'no-unknown-parameters': noUnknownParameters,
+	'no-unknown-returns': noUnknownReturns,
+	'no-unknown-type-aliases': noUnknownTypeAliases,
+	'no-unsafe-dictionary-type': noUnsafeDictionaryType,
+	'no-widen-then-assert': noWidenThenAssert,
+	'require-safety-comment-for-type-assertion':
+		requireSafetyCommentForTypeAssertion,
 	// ── Statement bans ───────────────────────────────────────
 	'avoid-try-catch': avoidTryCatch,
 	'prefer-match-over-switch': preferMatchOverSwitch,

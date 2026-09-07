@@ -6,7 +6,7 @@
 
 An opinionated [oxlint](https://oxc.rs/docs/guide/usage/linter) plugin for [Effect v4](https://effect.website) that drives every module toward Effect services, typed error channels, and functional composition. It flags imperative patterns, raw Node APIs, untyped errors, and other non-idiomatic shapes at the lint layer so they never make it into review.
 
-The plugin ships **57 rules** namespaced under `effect/`. Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
+The plugin ships **73 rules** namespaced under `effect/`, including all 16 rules from [`dmmulroy/anti-slop`](https://github.com/dmmulroy/anti-slop). Rules are implemented with the [`effect-oxlint`](https://github.com/mpsuesser/effect-oxlint) SDK and run as standard oxlint custom rules.
 
 ## Installation
 
@@ -27,7 +27,7 @@ export default defineConfig({
 });
 ```
 
-`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 57 rules at `error` severity.
+`configs.recommended` registers the package through oxlint's `jsPlugins` field and enables all 73 rules at `error` severity. `configs.all` also includes every rule.
 
 To override an individual rule, add a `rules` entry after the `extends` block:
 
@@ -58,6 +58,94 @@ If you use `.oxlintrc.json`, oxlint cannot import a package config object. Confi
 Use `oxlint.config.ts` when you want the full generated recommended config.
 
 ## Rules at a glance
+
+### Anti-slop rules
+
+These rules apply to JavaScript and TypeScript independently of Effect imports,
+except for the architecture policy expressed by `no-service-constructor-imports`.
+They are part of the same `effect/` namespace and both generated presets.
+
+| Rule | What it catches / exceptions |
+| --- | --- |
+| `no-chained-type-assertions` | Nested `as` or angle-bracket assertions, including parenthesized chains. Chains made only of `as const` are allowed. |
+| `no-conditional-empty-object-spread` | Object spreads with a conditional empty-object branch. No autofix: omitting a property is different from assigning `undefined`. |
+| `no-known-value-widening` | Known expressions flowing into explicit `unknown`, `object`, anonymous-object, or open-dictionary targets, including known arguments passed to local `unknown` type predicates. Empty dictionary accumulators and finite-key `Record` targets are allowed. |
+| `no-module-mocking` | Vitest/Jest `mock`, `doMock`, and `unstable_mockModule` calls, including aliased imports and computed method names. Locally shadowed framework names are allowed. |
+| `no-object-parameters` | `object` inputs, unions containing it, and scoped/transparent generic aliases resolving to it. |
+| `no-reflect-apply` | Global `Reflect.apply`, including computed access. Locally shadowed `Reflect` bindings are allowed. |
+| `no-reflect-get` | Global `Reflect.get`, including computed access. Locally shadowed `Reflect` bindings are allowed. |
+| `no-runtime-typeof` | Runtime `typeof` narrowing. Comparisons with the string `"undefined"` are allowed; type-guard checks can be enabled with an option. Type-level `typeof` is unaffected. |
+| `no-service-constructor-imports` | Named `make<CapitalizedName>` imports from `./` or `../` modules outside `*.test.*` and `*.spec.*`. Package/path-alias imports, default imports, and static constructors are outside its scope. |
+| `no-shape-in-symbol-names` | Case-insensitive `shape` in locally owned identifiers, including private and JSX names. Static member access such as `schema.shape` is allowed. |
+| `no-unknown-parameters` | Explicit `unknown` parameters and unions containing it. The parameter named `cause` and the exact subject of a type predicate are allowed. |
+| `no-unknown-returns` | Explicit return contracts resolving to `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`, including scoped/transparent generic aliases. |
+| `no-unknown-type-aliases` | Scoped/transparent generic aliases resolving to `unknown`. |
+| `no-unsafe-dictionary-type` | Dictionary values based on `unknown`, `any`, `object`, `{}`, or semantic equivalents. Generic constraints such as `T extends Record<string, unknown>` are allowed. |
+| `no-widen-then-assert` | Immutable local flows that widen known evidence to `unknown`, `any`, `object`, or a broad record, then assert it back to a narrower type. |
+| `require-safety-comment-for-type-assertion` | Non-const assertions without a preceding, non-empty invariant justification. The default marker is `SAFETY:`. |
+
+The analysis uses Oxlint's ESTree and lexical scopes, not a TypeScript type
+checker. Same-file aliases, forward references, lexical shadowing, and
+transparent generic aliases are resolved where documented. Imported types and
+cross-file call signatures are not inferred. `no-widen-then-assert` deliberately
+limits its value-flow analysis to immutable bindings within a function boundary.
+
+### Replacing an anti-slop installation
+
+Remove the old `anti-slop` and `anti-slop-effect` registrations from `jsPlugins`.
+Replace both rule-name prefixes with `effect/`, keeping existing severity and
+option values. Register `@mpsuesser/oxlint-plugin-effect` once, or use the
+recommended config above to enable the entire personal ruleset. There is no
+runtime dependency on anti-slop and no separate Effect entrypoint to register.
+
+For example, an existing customized configuration becomes:
+
+```ts
+import { defineConfig } from 'oxlint';
+import effect from '@mpsuesser/oxlint-plugin-effect';
+
+export default defineConfig({
+	extends: [effect.configs.recommended],
+	rules: {
+		'effect/no-runtime-typeof': ['error', { allowInTypeGuards: true }],
+		'effect/require-safety-comment-for-type-assertion': [
+			'error',
+			{ markers: ['INVARIANT', 'SAFETY'] }
+		]
+	}
+});
+```
+
+`allowInTypeGuards` defaults to `false` and permits checks directly within type
+predicate/assertion functions, not nested ordinary functions. `markers`
+defaults to `['SAFETY']`; markers are literal strings (regex punctuation is
+escaped), trimmed before matching, and must be followed by `:` and a non-empty
+justification. Comments before exported declarations are recognized; comments
+after an assertion do not justify it.
+
+```ts
+// Rejected: assertions fabricate evidence in two steps.
+const user = input as unknown as User;
+
+// Rejected: the known "start" key is erased.
+const handlers: Record<string, Handler> = { start: startHandler };
+
+// Preserve known keys while checking their values.
+const preciseHandlers = { start: startHandler } satisfies Record<string, Handler>;
+
+// Accepted by require-safety-comment-for-type-assertion:
+// SAFETY: parseUserId checked the identifier before branding it.
+const userId = parsedId as UserId;
+```
+
+Some existing rules are intentionally stricter or overlap. `casting-awareness`
+still reports assertions even with a safety comment; turn it off if justified
+assertions are your chosen policy. `prefer-effect-is` can still report `typeof`
+inside guards even when `no-runtime-typeof` allows them. `avoid-any` overlaps
+with chained assertions, and `avoid-object-type` addresses `Object`/`{}` rather
+than the lowercase `object` parameter contract. Configure each independently.
+
+### Effect-first rules
 
 | Rule                                                                                                  | What it catches                                                                  |
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -1010,4 +1098,6 @@ The same rule set is also expressed as a [`pi-effect-harness`](https://github.co
 
 ## License
 
-MIT
+MIT. Anti-slop-derived rules and fixtures retain their upstream MIT notice in
+[`licenses/anti-slop.txt`](./licenses/anti-slop.txt); see
+[`licenses/README.md`](./licenses/README.md) for provenance.

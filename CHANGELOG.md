@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - Anti-slop rules
+
+### Added
+
+- Ported all 15 generic anti-slop rules plus `no-service-constructor-imports` from `dmmulroy/anti-slop` at `e8c4880471b23ab7f216fba7b27d173a6ef07d4c` into the `effect/` namespace using `effect-oxlint` rule/visitor APIs and Schema-decoded options.
+- Both generated presets now enable all 73 rules. Existing anti-slop severity and option settings can be retained by replacing their namespace prefix with `effect/`.
+- Retained all 298 upstream parser/scope regression cases and added SDK integration and value-flow/option regressions.
+- Included the upstream MIT license in npm and JSR packages and documented migration, options, analysis boundaries, and overlapping policies.
+- Added `bun run lint` as a standalone lint command.
+
 ## 0.4.3 - README generator formatting
 
 ### Fixed
